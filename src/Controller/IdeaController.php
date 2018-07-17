@@ -16,6 +16,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class IdeaController extends Controller
 {
     /**
+     * @Route("/admin")
+     */
+    public function admin()
+    {
+        return $this->redirectToRoute('idea_index');
+    }
+
+    /**
      * @Route("/", name="idea_index", methods="GET|POST")
      */
     public function index(Request $request, IdeaRepository $ideaRepository): Response
@@ -39,44 +47,31 @@ class IdeaController extends Controller
     }
 
     /**
-     * @Route("/new", name="idea_new", methods="GET|POST")
-     */
-    public function new(Request $request): Response
-    {
-        $idea = new Idea();
-        $form = $this->createForm(IdeaType::class, $idea);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $idea->setDate(new \DateTime());
-            $idea->setUpvote(0);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($idea);
-            $em->flush();
-
-            return $this->redirectToRoute('idea_index');
-        }
-
-        return $this->render('idea/new.html.twig', [
-            'idea' => $idea,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="idea_upvote", methods="GET")
+     * @Route("/{id}/upvote", name="idea_upvote", methods="GET")
      */
     public function upvote(Idea $idea): Response
     {
         $idea->setUpvote($idea->getUpvote() + 1);
         $this->getDoctrine()->getManager()->flush();
-        $response = $this->forward('App\Controller\IdeaController::index');
 
-        return $response;
+        return $this->redirectToRoute('idea_index');
     }
 
     /**
-     * @Route("/{id}/edit", name="idea_edit", methods="GET|POST")
+     * @Route("/{id}/unvote", name="idea_unvote", methods="GET")
+     */
+    public function unvote(Idea $idea): Response
+    {
+        if ($idea->getUpvote() > 0) {
+            $idea->setUpvote($idea->getUpvote() - 1);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return $this->redirectToRoute('idea_index');
+    }
+
+    /**
+     * @Route("admin/{id}/edit", name="idea_edit", methods="GET|POST")
      */
     public function edit(Request $request, Idea $idea): Response
     {
@@ -86,7 +81,7 @@ class IdeaController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('idea_edit', ['id' => $idea->getId()]);
+            return $this->redirectToRoute('idea_index');
         }
 
         return $this->render('idea/edit.html.twig', [
@@ -96,7 +91,7 @@ class IdeaController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="idea_delete", methods="DELETE")
+     * @Route("admin/{id}", name="idea_delete", methods="DELETE")
      */
     public function delete(Request $request, Idea $idea): Response
     {
