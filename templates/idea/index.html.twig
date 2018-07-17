@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Idea index{% endblock %}
+
+{% block body %}
+    <h1>Ideas</h1>
+
+    {{ include('idea/_form.html.twig') }}
+
+    {% for idea in ideas %}
+        <div class="card text-white bg-dark mb-3" style="max-width: 50rem;">
+            <div class="card-header">{{ idea.upvote }}<a href="{{ path('idea_upvote', {'id' : idea.id}) }}"><i class="fas fa-arrow-up">Up</i></a></div>
+            <div class="card-body">
+                <h5 class="card-title">{{ idea.name }}</h5>
+                <p class="card-text">{{ idea.date ? idea.date|date('Y-m-d H:i:s') : '' }}</p>
+                <a href="{{ path('idea_edit', {'id': idea.id}) }}">edit</a>
+            </div>
+        </div>
+    {% else %}
+        <p>no records found</p>
+    {% endfor %}
+{% endblock %}

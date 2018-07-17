@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Idea{% endblock %}
+
+{% block body %}
+    <h1>Idea</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ idea.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ idea.name }}</td>
+            </tr>
+            <tr>
+                <th>Upvote</th>
+                <td>{{ idea.upvote }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ idea.date ? idea.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('idea_index') }}">back to list</a>
+
+    <a href="{{ path('idea_edit', {'id': idea.id}) }}">edit</a>
+
+    {{ include('idea/_delete_form.html.twig') }}
+{% endblock %}
