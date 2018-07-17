@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Idea index{% endblock %}
-
 {% block body %}
     <h1>Ideas</h1>
 
@@ -17,13 +15,17 @@
             <div class="card-body">
                 <h5 class="card-title">{{ idea.name }}</h5>
                 <p class="card-text">{{ idea.date ? idea.date|date('d-m-Y H:i') : '' }}</p>
+
                 {% if is_granted('ROLE_ADMIN') %}
                     <button class="btn btn-light"><a href="{{ path('idea_edit', {'id': idea.id}) }}">edit</a></button>
                     {{ include('idea/_delete_form.html.twig') }}
                 {% endif %}
+
             </div>
         </div>
+
     {% else %}
         <p>no records found</p>
     {% endfor %}
+
 {% endblock %}
